@@ -21,7 +21,7 @@ path = 'su_traingSet/'
 img_foldernames = os.listdir(path)
 classname = {'cats': 0, 'dogs': 1}
 
-epochs = 10  # 訓練的次數
+epochs = 100  # 訓練的次數
 img_rows = 100  # 驗證碼影像檔的高
 img_cols = 100  # 驗證碼影像檔的寬
 digits_in_img = 6  # 驗證碼影像檔中有幾位數
