@@ -17,11 +17,11 @@ from PIL import Image
 
 # initialize variables
 # trainingSet的路徑
-path = 'su_traingSet/'
+path = 'trainDataset/'
 img_foldernames = os.listdir(path)
-classname = {'cats': 0, 'dogs': 1}
+classname = {'0_withFlower': 0,'0_withoutFlower': 1,'1_withFlower': 2,'1_withoutFlower': 3,'2_withFlower': 4, '2_withoutFlower': 5,'3_withFlower':6,'3_withoutFlower':7}
 
-epochs = 100  # 訓練的次數
+epochs = 1000  # 訓練的次數
 img_rows = 100  # 驗證碼影像檔的高
 img_cols = 100  # 驗證碼影像檔的寬
 digits_in_img = 6  # 驗證碼影像檔中有幾位數
