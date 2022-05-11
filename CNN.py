@@ -19,7 +19,7 @@ from PIL import Image
 # trainingSet的路徑
 path = 'trainDataset/'
 img_foldernames = os.listdir(path)
-classname = {'0_withFlower': 0,'0_withoutFlower': 1,'1_withFlower': 2,'1_withoutFlower': 3,'2_withFlower': 4, '2_withoutFlower': 5,'3_withFlower':6,'3_withoutFlower':7}
+classname = {'0_withFlower': 0,'0_withoutFlower': 4,'1_withFlower': 1,'1_withoutFlower': 5,'2_withFlower': 2, '2_withoutFlower': 6,'3_withFlower':3,'3_withoutFlower':7}
 
 epochs = 1000  # 訓練的次數
 img_rows = 100  # 驗證碼影像檔的高
