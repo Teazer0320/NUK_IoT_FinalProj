@@ -19,7 +19,8 @@ from PIL import Image
 # trainingSet的路徑
 path = 'trainDataset/'
 img_foldernames = os.listdir(path)
-classname = {'0_withFlower': 0,'0_withoutFlower': 4,'1_withFlower': 1,'1_withoutFlower': 5,'2_withFlower': 2, '2_withoutFlower': 6,'3_withFlower':3,'3_withoutFlower':7}
+classname = {'0_withFlower': 0, '0_withoutFlower': 4, '1_withFlower': 1, '1_withoutFlower': 5,
+             '2_withFlower': 2, '2_withoutFlower': 6, '3_withFlower': 3, '3_withoutFlower': 7}
 
 epochs = 1000  # 訓練的次數
 img_rows = 100  # 驗證碼影像檔的高
@@ -67,7 +68,7 @@ if os.path.isfile('cnn_model.h5'):
 else:
     model = models.Sequential()
     model.add(layers.Conv2D(32, kernel_size=(3, 3), activation='relu',
-              input_shape=(img_rows, img_cols // digits_in_img, 1)))
+                            input_shape=(img_rows, img_cols // digits_in_img, 1)))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
     model.add(layers.MaxPooling2D(pool_size=(2, 2)))
     model.add(layers.Dropout(rate=0.25))
