@@ -21,7 +21,7 @@ path = 'trainDataset/'
 img_foldernames = os.listdir(path)
 classname = {'0_withFlower': 0,'0_withoutFlower': 1,'1_withFlower': 2,'1_withoutFlower': 3,'2_withFlower': 4, '2_withoutFlower': 5,'3_withFlower':6,'3_withoutFlower':7}
 
-epochs = 200  # 訓練的次數
+epochs = 1000  # 訓練的次數
 img_rows = 100  # 驗證碼影像檔的高
 img_cols = 100  # 驗證碼影像檔的寬
 digits_in_img = 6  # 驗證碼影像檔中有幾位數
@@ -75,7 +75,8 @@ x_test = x_list_test
 y_train = y_list_train
 y_test = y_list_test
 
-if os.path.isfile('cnn_model.h5'):
+#改成自己的模型架構
+if os.path.isfile('./cnn_model.h5'):
     model = models.load_model('cnn_model.h5')
     print('Model loaded from file.')
 else:
@@ -90,12 +91,10 @@ else:
     model.add(layers.Dropout(rate=0.5))
     model.add(layers.Dense(10, activation='softmax'))
     print('New model created.')
-
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
-
-model.fit(np.array(x_train), np.array(y_train), batch_size=digits_in_img,
-          epochs=epochs, verbose=1, validation_data=(np.array(x_test), np.array(y_test)))
+    model.compile(loss=keras.losses.categorical_crossentropy,
+                optimizer=keras.optimizers.Adam(), metrics=['accuracy'])
+    model.fit(np.array(x_train), np.array(y_train), batch_size=digits_in_img,
+            epochs=epochs, verbose=1, validation_data=(np.array(x_test), np.array(y_test)))
 
 #有區分有花無花的結果
 loss, accuracy = model.evaluate(np.array(x_test), np.array(y_test), verbose=0)
@@ -104,20 +103,17 @@ print('Test accuracy(有分有沒有開花):', accuracy)
 #沒有區分有花沒有花的結果
 prediction = model.predict(np.array(x_test))
 prediction_classes = np.argmax(prediction,axis=1)
-
 correct_count = 0
 error_count = 0
 start_index = 0
 for class_index in range(len(classname)//2):
-    end_index = start_index + (classes_pic_num[(class_index*2)])*6 + (classes_pic_num[class_index*2+1])*6
+    end_index = start_index + (classes_pic_num[(class_index*2)])*(digits_in_img) + (classes_pic_num[class_index*2+1])*(digits_in_img)
     for pic_index in range(start_index,end_index):
         if(prediction_classes[pic_index]==class_index*2 or prediction_classes[pic_index] == class_index*2+1):
             correct_count = correct_count+1
         else:
             error_count = error_count+1
     start_index = end_index
-
-
 print("Test accuracy(不分有沒有開花):", float((correct_count)/len(prediction_classes)))
 
 
