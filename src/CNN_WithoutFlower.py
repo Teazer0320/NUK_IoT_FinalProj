@@ -21,7 +21,7 @@ path = 'trainDataset/'
 img_foldernames = os.listdir(path)
 classname = {'0_withFlower': 0,'0_withoutFlower': 1,'1_withFlower': 2,'1_withoutFlower': 3,'2_withFlower': 4, '2_withoutFlower': 5,'3_withFlower':6,'3_withoutFlower':7}
 
-epochs = 1000  # 訓練的次數
+epochs = 3  # 訓練的次數
 img_rows = 100  # 驗證碼影像檔的高
 img_cols = 100  # 驗證碼影像檔的寬
 digits_in_img = 6  # 驗證碼影像檔中有幾位數
@@ -43,6 +43,12 @@ def split_digits_in_img(img_array, x_list, y_list):
         x_list.append(img_array[:, i * step:(i + 1) * step] / 255)
         # print(classname[img_foldername])
         y_list.append(classname[img_foldername])
+
+def get_mode(predict_result):
+    counts = np.bincount(predict_result)
+    mode = np.argmax(counts)
+    return mode
+
 
 
 for img_foldername in img_foldernames:
@@ -75,7 +81,7 @@ x_test = x_list_test
 y_train = y_list_train
 y_test = y_list_test
 
-#改成自己的模型架構
+#改成自己的模型路徑
 if os.path.isfile('./cnn_model.h5'):
     model = models.load_model('cnn_model.h5')
     print('Model loaded from file.')
@@ -96,13 +102,15 @@ else:
     model.fit(np.array(x_train), np.array(y_train), batch_size=digits_in_img,
             epochs=epochs, verbose=1, validation_data=(np.array(x_test), np.array(y_test)))
 
-#有區分有花無花的結果
+#有區分有花無花的結果+沒有取眾數
 loss, accuracy = model.evaluate(np.array(x_test), np.array(y_test), verbose=0)
 print('Test loss:', loss)
-print('Test accuracy(有分有沒有開花):', accuracy)
+print('Test accuracy(還沒取眾數前 / 有分有沒有開花):', accuracy)
 #沒有區分有花沒有花的結果
 prediction = model.predict(np.array(x_test))
 prediction_classes = np.argmax(prediction,axis=1)
+
+#沒有區分有花無花的結果+沒有取眾數
 correct_count = 0
 error_count = 0
 start_index = 0
@@ -114,8 +122,49 @@ for class_index in range(len(classname)//2):
         else:
             error_count = error_count+1
     start_index = end_index
-print("Test accuracy(不分有沒有開花):", float((correct_count)/len(prediction_classes)))
+print("Test accuracy(還沒取眾數前 / 不分有沒有開花):", float((correct_count)/len(prediction_classes)))
 
+
+
+
+
+#有取眾數
+#每張圖的預測結果有6個，所以要找出出現次數最多的類別(取眾數)
+start_index=0
+predict_classes_in_one = list() #放從6個選項中找出的最常出現的類別
+ground_truth_in_one = list() #放真正的分類類別
+for class_index in range(len(classname)):
+    for prediction_index in range(classes_pic_num[class_index]):
+        mode = get_mode(prediction_classes[start_index:(start_index+digits_in_img)])
+        predict_classes_in_one.append(mode)
+        ground_truth_in_one.append(class_index)
+        start_index = start_index + digits_in_img
+      
+#計算有區分有沒有開花
+correct_count = 0
+error_count = 0
+start_index = 0
+for class_index in range(len(predict_classes_in_one)):
+    if(predict_classes_in_one[class_index] == ground_truth_in_one[class_index]):
+        correct_count = correct_count+1
+    else :
+        error_count = error_count +1
+print("Test accuracy(有取眾數 / 有分有沒有開花):", float((correct_count)/len(predict_classes_in_one)))
+
+
+#計算沒有分有沒有開花
+correct_count = 0
+error_count = 0
+start_index = 0
+for class_index in range(len(classname)//2):
+    end_index = start_index + (classes_pic_num[(class_index*2)]) + (classes_pic_num[class_index*2+1])
+    for pic_index in range(start_index,end_index):
+        if(predict_classes_in_one[pic_index]==class_index*2 or predict_classes_in_one[pic_index] == class_index*2+1):
+            correct_count = correct_count+1
+        else:
+            error_count = error_count+1
+    start_index = end_index
+print("Test accuracy(有取眾數 / 不分有沒有開花):", float((correct_count)/len(predict_classes_in_one)))
 
 
 model.save('cnn_model.h5')
