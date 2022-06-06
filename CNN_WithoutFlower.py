@@ -140,8 +140,7 @@ for class_index in range(len(classname)):
         predict_classes_in_one.append(mode)
         ground_truth_in_one.append(class_index)
         start_index = start_index + digits_in_img
-print(predict_classes_in_one)
-print(ground_truth_in_one)
+
       
 #計算有區分有沒有開花
 correct_count = 0
@@ -153,8 +152,7 @@ for class_index in range(len(predict_classes_in_one)):
     else :
         error_count = error_count +1
 print("Test accuracy(有取眾數 / 有分有沒有開花):", float((correct_count)/len(predict_classes_in_one)))
-print(correct_count)
-print(error_count)
+
 
 
 #計算沒有分有沒有開花
@@ -170,7 +168,6 @@ for class_index in range(len(classname)//2):
             error_count = error_count+1
     start_index = end_index
 print("Test accuracy(有取眾數 / 不分有沒有開花):", float((correct_count)/len(predict_classes_in_one)))
-print(correct_count)
-print(error_count)
+
 
 model.save('cnn_model.h5')
