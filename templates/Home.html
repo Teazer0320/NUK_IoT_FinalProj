@@ -12,7 +12,7 @@
         <header>
             <div class="navbar navbar-dark shadow-sm" style="background-color: #aec4b7;">
                 <div class="container justify-content-between" style="padding: 0px;">
-                    <a href="Home.html" class="navbar-brand align-items-center d-flex">
+                    <a href="/" class="navbar-brand align-items-center d-flex">
                         <img src="{{ url_for('static', filename='img/plant_elf_icon.png') }}" class="logo">
                         <h2 style="font-weight:bold ;">盆栽小精靈</h2>
                     </a>
@@ -24,20 +24,23 @@
                 <!-- <h2>植物列表</h2> -->
             </div>
             <div style="text-align:center">
-                <div class="card cardlist">
-                    <div class="row">
-                        <div class="col-4" style="display: flex; justify-content: center; align-items: center">
-                            <img src="{{ url_for('static', filename='img/desert_rose_icon.png')}}" style="width: 90px; padding: 15px;">
+                <div class="card cardlist btn">
+                    <a href="/">
+                        <div class="row">
+                            <div class="col-4" style="display: flex; justify-content: center; align-items: center">
+                                <img src="{{ url_for('static', filename='img/desert_rose_icon.png')}}" style="width: 90px; padding: 15px;">
+                            </div>
+                            <div class="col-8" style="display: flex; justify-content: center; align-items: center">
+                              <div class="card-body" >
+                                <h5 class="card-text" style="color: #495556;">植物一(名字)</h5>
+                                <h5 class="card-text" style="color: #aec4b7;">沙漠玫瑰</h5>
+                              </div>
+                            </div>
                         </div>
-                        <div class="col-8" style="display: flex; justify-content: center; align-items: center">
-                          <div class="card-body" >
-                            <h5 class="card-text" style="color: #495556;">植物一(名字)</h5>
-                            <h5 class="card-text" style="color: #aec4b7;">沙漠玫瑰</h5>
-                          </div>
-                        </div>
-                    </div>
+                    </a>
+                    
                 </div>
-                <div class="card cardlist" >
+                <div class="card cardlist">
                     <div class="row">
                         <div class="col-4" style="display: flex; justify-content: center; align-items: center">
                             <img src="{{ url_for('static', filename='img/mint_icon.png') }}" style="width: 90px; padding: 15px;">
@@ -51,7 +54,7 @@
                     </div>
                 </div>
                 <div class="cardlist">
-                    <a class="btn btn-primary btn-set" href="CreatePlant.html" role="button">+ 新增植物</a>
+                    <a class="btn btn-primary btn-set" href="/plant/create" role="button">+ 新增植物</a>
                 </div>
             </div>
         </main>

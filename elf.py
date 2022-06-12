@@ -32,10 +32,6 @@ def callback():
         abort(400)
     return 'OK'
 
-@app.route("/")
-def homepage():
-	return render_template("Home.html")
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     mtext = event.message.text
@@ -46,6 +42,18 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='發生錯誤！'))
 
+
+@app.route("/")
+def homepage():
+	return render_template("Home.html")
+
+@app.route("/plant/create", methods=["GET", "POST"])
+def createPlant():
+    """
+    utility:
+
+    """
+    return render_template("CreatePlant.html")
 
 if __name__ == '__main__':
     app.run(port=8000)
