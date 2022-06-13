@@ -6,7 +6,7 @@
         <link href="{{ url_for('static', filename='css/plantelf.css') }}" rel="stylesheet">
         <meta charset = "utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Home</title>
+        <title>WatchPlant</title>
     </head>
     <body>
         <header>
@@ -24,26 +24,12 @@
                 <!-- <h2>植物列表</h2> -->
             </div>
             <div style="text-align:center">
-                {% for item in data %}
-                <div class="card cardlist btn">
-                    <a href="/plant/{{item.id}}">
-                        <div class="row">
-                            <div class="col-4" style="display: flex; justify-content: center; align-items: center">
-                                <img src="{{ url_for('static', filename=planttype2img(item.plant_type))}}" style="width: 90px; padding: 15px;">
-                            </div>
-                            <div class="col-8" style="display: flex; justify-content: center; align-items: center">
-                              <div class="card-body" >
-                                <h5 class="card-text" style="color: #495556;">{{ item.name }}</h5>
-                                <h5 class="card-text" style="color: #aec4b7;">{{ item.plant_type }}</h5>
-                              </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-                
                 <div class="cardlist">
-                    <a class="btn btn-primary btn-set" href="/plant/create" role="button">+ 新增植物</a>
+                    <!-- 樹莓派拍到的照片 -->
+                    <img src="{{ url_for('static', filename='img/plant_elf_icon.png') }}" class="logo">
+                </div>
+                <div class="cardlist">
+                    <a class="btn btn-primary btn-set" href="/plant/{{plant_id}}" role="button">返回</a>
                 </div>
             </div>
         </main>
