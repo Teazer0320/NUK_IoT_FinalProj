@@ -91,6 +91,11 @@ def envcontrol_record(plant_id):
     # return 'Plant' + plant_id
     return render_template("EnvControlRecord.html")
 
+@app.route("/plant/watch/<plant_id>")
+def watch_plant(plant_id):
+    # return 'Plant' + plant_id
+    return render_template("WatchPlant.html", plant_id=plant_id)
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     mtext = event.message.text
