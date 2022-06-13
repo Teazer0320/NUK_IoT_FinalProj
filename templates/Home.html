@@ -24,23 +24,24 @@
                 <!-- <h2>植物列表</h2> -->
             </div>
             <div style="text-align:center">
+                {% for item in data %}
                 <div class="card cardlist btn">
-                    <a href="/">
+                    <a href="/plant/{{item.id}}">
                         <div class="row">
                             <div class="col-4" style="display: flex; justify-content: center; align-items: center">
-                                <img src="{{ url_for('static', filename='img/desert_rose_icon.png')}}" style="width: 90px; padding: 15px;">
+                                <img src="{{ url_for('static', filename=planttype2img(item.plant_type))}}" style="width: 90px; padding: 15px;">
                             </div>
                             <div class="col-8" style="display: flex; justify-content: center; align-items: center">
                               <div class="card-body" >
-                                <h5 class="card-text" style="color: #495556;">植物一(名字)</h5>
-                                <h5 class="card-text" style="color: #aec4b7;">沙漠玫瑰</h5>
+                                <h5 class="card-text" style="color: #495556;">{{ item.name }}</h5>
+                                <h5 class="card-text" style="color: #aec4b7;">{{ item.plant_type }}</h5>
                               </div>
                             </div>
                         </div>
                     </a>
-                    
                 </div>
-                <div class="card cardlist">
+                {% endfor %}
+                <!-- <div class="card cardlist">
                     <div class="row">
                         <div class="col-4" style="display: flex; justify-content: center; align-items: center">
                             <img src="{{ url_for('static', filename='img/mint_icon.png') }}" style="width: 90px; padding: 15px;">
@@ -52,7 +53,7 @@
                           </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="cardlist">
                     <a class="btn btn-primary btn-set" href="/plant/create" role="button">+ 新增植物</a>
                 </div>

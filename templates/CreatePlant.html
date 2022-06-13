@@ -1,49 +1,65 @@
 <!doctype html>
 <html>
-    <head>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-        <link href="{{ url_for('static', filename='css/plantelf.css') }}" rel="stylesheet">
-        <meta charset = "utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>CreatePlant</title>
-    </head>
-    <body>
-        <header>
-            <div class="navbar navbar-dark shadow-sm" style="background-color: #aec4b7;">
-                <div class="container justify-content-between" style="padding: 0px;">
-                    <a href="/" class="navbar-brand align-items-center d-flex">
-                        <img src="{{ url_for('static', filename='img/plant_elf_icon.png') }}" class="logo">
-                        <h2 style="font-weight:bold ;">盆栽小精靈</h2>
-                    </a>
-                </div>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <link href="{{ url_for('static', filename='css/plantelf.css') }}" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CreatePlant</title>
+</head>
+
+<body>
+    <header>
+        <div class="navbar navbar-dark shadow-sm" style="background-color: #aec4b7;">
+            <div class="container justify-content-between" style="padding: 0px;">
+                <a href="/" class="navbar-brand align-items-center d-flex">
+                    <img src="{{ url_for('static', filename='img/plant_elf_icon.png') }}" class="logo">
+                    <h2 style="font-weight:bold ;">盆栽小精靈</h2>
+                </a>
             </div>
-        </header>
-        <main class="container">
-            <div style=" padding: 20px 0px;"></divstyle>
+        </div>
+    </header>
+    <main class="container">
+        <form action="/plant/confirmcreate" method="POST">
+            <div style=" padding: 20px 0px;">
+                </divstyle>
             </div>
             <div style="text-align:center">
                 <div class="input-group cardlist" style="height: 50px; width: auto;">
                     <span class="input-group-text" id="inputGroup-sizing-lg">植物名稱</span>
-                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="植物一">
+                    <input name="plant_name" type="text" class="form-control" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-lg" placeholder="植物一">
                 </div>
                 <div class="input-group cardlist" style="height: 50px; width: auto;">
                     <label class="input-group-text" for="inputGroupSelect01">植物種類</label>
-                    <select class="form-select" id="inputGroupSelect01">
+                    <select name="plant_type" class="form-select" id="inputGroupSelect01">
                         <option selected>選擇</option>
+                        <option value="0">沙漠玫瑰</option>
                         <option value="1">薄荷</option>
-                        <option value="2">沙漠玫瑰</option>
-                        <option value="3">溫達骨葵</option>
-                        <option value="4">烏羽玉</option>
+                        <option value="2">溫達骨葵</option>
+                        <option value="3">烏羽玉</option>
                     </select>
-                    <a  class="btn" href="#" style="background-color: #aec4b7;">
-                        <img src="{{ url_for('static', filename='img/plant_recognition_icon.png') }}"  style="width: 40px;">
+                    <a class="btn" href="#" style="background-color: #aec4b7;">
+                        <img src="{{ url_for('static', filename='img/plant_recognition_icon.png') }}"
+                            style="width: 40px;">
                     </a>
-                  </div>
-                <div class="cardlist">
-                    <a class="btn btn-primary btn-set" href="FunctionList.html" role="button">確認新增</a>
                 </div>
-            </div> 
-        </main>
-    </body>
+                <div class="input-group cardlist" style="height: 50px; width: auto;">
+                    <span class="input-group-text" id="inputGroup-sizing-lg">機器編號</span>
+                    <input name="machine_id" type="text" class="form-control" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-lg">
+                </div>
+                <div class="cardlist">
+                    <button class="btn btn-primary btn-set" type="submit">確認新增</button>
+                </div>
+            </div>
+        </form>
+    </main>
+</body>
+
 </html>
