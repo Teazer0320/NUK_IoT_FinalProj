@@ -36,14 +36,13 @@ def insert_pic_intoDB(pic):
 	db = pymysql.connect(**db_settings)
 	cursor = db.cursor()
 	pic_bin = pic.tobytes()
-	#ts = time.time()
-	# timestamp = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
-		
+	
 	cursor.execute("insert into plant_picture (machine_id, plant_pic) values(%s, %s);", ("FF:EE:AA:FF:CC:BB", pic_bin))
 	db.commit()
 	
 	cursor.close()
 	db.close()
+
 
 def run_cap():
 	global cap_img, plant_pred
@@ -77,7 +76,7 @@ def run_cap():
 def store_upload_img():
 	
 	try:
-#		DAN.push("Dummy_Sensor", plant_pred)
+		DAN.push("Dummy_Sensor", plant_pred)
 		insert_pic_intoDB(cap_img[0])
 		print("put", plant_pred)
 	except Exception as e:
@@ -87,7 +86,7 @@ def main():
 	if len(argv) >= 2:
 		DAN.deregister()
 		exit()
-#	DAN.device_registration_with_retry(ServerURL, Reg_addr)
+	DAN.device_registration_with_retry(ServerURL, Reg_addr)
 	cap_thread = threading.Thread(target = run_cap)
 	cap_thread.start()
 
