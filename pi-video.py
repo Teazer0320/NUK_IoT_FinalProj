@@ -11,6 +11,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import socket
 import pymysql
 import DAN
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 ServerURL = "http://2.iottalk.tw:9999"
 Reg_addr = None
@@ -20,33 +21,32 @@ DAN.profile["df_list"] = ["Dummy_Sensor", "Dummy_Control", ]
 
 
 cap_img = {}
+plant_pred = None
+
+# shape: 480, 640, 3
+# dtype: uint8
 
 def insert_pic_intoDB(pic):
 	db_settings = {
 		"host": "127.0.0.1",
 		"user": "elf",
 		"password": "elfgroup4",
-		"database": "elf",
+		"database": "elfdb",
 	}
 	db = pymysql.connect(**db_settings)
 	cursor = db.cursor()
-	# print(pic.shape)  (480, 640, 3)
-	print(pic.dtype)
 	pic_bin = pic.tobytes()
 	#ts = time.time()
 	# timestamp = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
 		
-	cursor.execute("insert into plant (machine_id, plant_pic) values(%s,%s);", ("FF:EE:AA:FF:CC:BB", pic_bin))
+	cursor.execute("insert into plant_picture (machine_id, plant_pic) values(%s, %s);", ("FF:EE:AA:FF:CC:BB", pic_bin))
 	db.commit()
-	record = cursor.fetchall()
-	print(record)
-	# print(pic_bin)
 	
 	cursor.close()
 	db.close()
 
 def run_cap():
-	global cap_img
+	global cap_img, plant_pred
 	model = models.load_model("cnn_model.h5")
 	cap = cv2.VideoCapture(0)
 	while True:
@@ -66,22 +66,22 @@ def run_cap():
 			label_votes = [0, 0, 0, 0]
 			for p in pred:
 				label_votes[p // 2] += 1
-			pred = label_votes.index(max(label_votes))
-			try:
-#				DAN.push("Dummy_Sensor", pred)
-				print("put", pred)
-			except Exception as e:
-				print(e)
-
-			# time.sleep(5)
-			
-
+			plant_pred = label_votes.index(max(label_votes))
 
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 
 
 	cap.release()
+
+def store_upload_img():
+	
+	try:
+#		DAN.push("Dummy_Sensor", plant_pred)
+		insert_pic_intoDB(cap_img[0])
+		print("put", plant_pred)
+	except Exception as e:
+		print(e)
 
 def main():
 	if len(argv) >= 2:
@@ -91,18 +91,11 @@ def main():
 	cap_thread = threading.Thread(target = run_cap)
 	cap_thread.start()
 
-	cap_idx = 0
-	first = False
-		
-	while True:
-		
-		if cap_idx in cap_img.keys():
-			cv2.imshow("live", cap_img[0])
-			if first == False:
-				first = True
-				insert_pic_intoDB(cap_img[0])
-		if cv2.waitKey(1) & 0xFF == ord('q'):
-			break
+	sched = BlockingScheduler(timezone="Asia/Shanghai")
+
+	sched.add_job(store_upload_img, "interval", seconds=10)
+	
+	sched.start()
 
 	cap_thread.join()
 

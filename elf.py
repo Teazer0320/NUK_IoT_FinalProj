@@ -86,6 +86,9 @@ def plant_page(plant_id):
     # return 'Plant' + plant_id
     return render_template("FunctionList.html", plant_id=plant_id)
 
+@app.route("/plant/<plant_id>/pics"):
+    return None
+
 @app.route("/control_record/<plant_id>")
 def envcontrol_record(plant_id):
     # return 'Plant' + plant_id
