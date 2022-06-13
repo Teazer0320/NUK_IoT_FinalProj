@@ -9,6 +9,7 @@ app = Flask(__name__)
 import pymysql
 import cv2
 import numpy as np
+import base64
 
 # LINE 聊天機器人的基本資料
 LINE_CHANNEL_ACCESS_TOKEN = "Pa7wrVG1lVy5pWueyME62YrPVl0eE5p7ujp0k3oWqA3+i9NObjUWPXB0tGaXirZsjlth8RCG92xKpDmR6i2mtcA26Yx43XlTPc3tbS5+4ASSvqTDI3lvBIbyB0MvwTTupxC+0VLiAa6mnNU4ClFDjgdB04t89/1O/w1cDnyilFU="
@@ -28,20 +29,21 @@ def planttype2img(plant_type):
 
 # 接收 LINE 的資訊
 
-def query_pic_fromDB():
+def query_pic_fromDB(plant_id):
     
     cursor = db.cursor()
-    cursor.execute("select * from plant_picture;")
+    cursor.execute("select * from plant_picture where plant_id=%s;", plant_id)
     
     pics = cursor.fetchall()
-    
-    imgshape = (480, 640, 3)
+    # imgshape = (480, 640, 3)
 
     ret_pics = []
     for pic in pics:
-        img = np.frombuffer(pic[2], dtype=np.uint8)
-        img = img.reshape(imgshape)
-        ret_pics.append((pic[0], pic[1], img))
+        img =  base64.b64encode(pic[3]).decode("utf-8")
+        ret_pics.append({
+            "date": pic[2],
+            "img": img})
+
     cursor.close()
     
     return ret_pics
@@ -95,6 +97,12 @@ def envcontrol_record(plant_id):
 def watch_plant(plant_id):
     # return 'Plant' + plant_id
     return render_template("WatchPlant.html", plant_id=plant_id)
+
+@app.route("/plant/diary/<plant_id>")
+def plant_diary(plant_id):
+    # return 'Plant' + plant_id
+    pics_data = query_pic_fromDB(plant_id)
+    return render_template("PlantDiary.html", pics_data=pics_data, plant_id=plant_id)
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):

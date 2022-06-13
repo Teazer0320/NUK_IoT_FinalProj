@@ -6,7 +6,7 @@
         <link href="{{ url_for('static', filename='css/plantelf.css') }}" rel="stylesheet">
         <meta charset = "utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>FunctionList</title>
+        <title>PlantDiary</title>
     </head>
     <body>
         <header>
@@ -21,40 +21,19 @@
         </header>
         <main class="container">
             <div style=" padding: 20px 0px;"></divstyle>
+                <!-- <h2>排版</h2> -->
             </div>
             <div style="text-align:center">
+                {% for pic in pics_data %}
+                <h5 class="card-text" style="color: #495556;">{{ pic.date }}</h5>
                 <div class="cardlist">
-                    <h2 class="big-title">自動模式</h2>
-                    <div class="py-3 d-flex justify-content-center">
-                        <div>
-                        OFF
-                            <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                            </label>
-                            ON
-                        </div>
-                    </div>
+                    <!-- 資料庫的照片 -->
+                    <img src="data:;base64,{{ pic.img }}">
+
                 </div>
+                {% endfor %}
                 <div class="cardlist">
-                    <h5>———目前環境———</h5>
-                    <a>溫度<span>28</span>°C， 土壤濕度<span>70</span>%</a>
-                </div>
-                
-                <div class="card cardlist">
-                    <a href="/control_record/{{plant_id}}" class="func" >
-                    <h5 style="margin: 20px 0; color: #495556;">環境控制紀錄</h5>
-                    </a>
-                </div>
-                <div class="card cardlist">
-                    <a href="/plant/watch/{{plant_id}}" class="func" >
-                    <h5 style="margin: 20px 0; color: #495556;">觀看植物</h5>
-                    </a>
-                </div>
-                <div class="card cardlist">
-                    <a href="/plant/diary/{{plant_id}}" class="func" >
-                    <h5 style="margin: 20px 0; color: #495556;">植物成長日記</h5>
-                    </a>
+                    <a class="btn btn-primary btn-set" href="/plant/{{plant_id}}" role="button">返回</a>
                 </div>
             </div>
         </main>
