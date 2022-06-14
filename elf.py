@@ -10,6 +10,7 @@ import pymysql
 import cv2
 import numpy as np
 import base64
+import datetime
 
 # LINE 聊天機器人的基本資料
 LINE_CHANNEL_ACCESS_TOKEN = "Pa7wrVG1lVy5pWueyME62YrPVl0eE5p7ujp0k3oWqA3+i9NObjUWPXB0tGaXirZsjlth8RCG92xKpDmR6i2mtcA26Yx43XlTPc3tbS5+4ASSvqTDI3lvBIbyB0MvwTTupxC+0VLiAa6mnNU4ClFDjgdB04t89/1O/w1cDnyilFU="
@@ -91,7 +92,8 @@ def plant_page(plant_id):
 @app.route("/control_record/<plant_id>")
 def envcontrol_record(plant_id):
     # return 'Plant' + plant_id
-    return render_template("EnvControlRecord.html")
+    date = request.args.get('querydate', datetime.date.today())
+    return render_template("EnvControlRecord.html", date=date)
 
 @app.route("/plant/watch/<plant_id>")
 def watch_plant(plant_id):
