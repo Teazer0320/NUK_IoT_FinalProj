@@ -7,6 +7,7 @@ from flask import request, abort
 from flask import Flask, render_template, url_for, redirect
 app = Flask(__name__)
 import pymysql
+from io import BytesIO
 import cv2
 import numpy as np
 import base64
@@ -35,11 +36,15 @@ def query_pic_fromDB(plant_id):
     cursor.execute("select * from plant_picture where plant_id=%s;", plant_id)
     
     pics = cursor.fetchall()
-    # imgshape = (480, 640, 3)
+    imgshape = (480, 640, 3)
 
     ret_pics = []
     for pic in pics:
-        img =  base64.b64encode(pic[3]).decode("utf-8")
+        # img = base64.b64encode(pic[3]).decode("utf-8")
+        img = np.frombuffer(pic[3], dtype=np.uint8).reshape(imgshape)
+        _, img = cv2.imencode(".jpg", img)
+        img = base64.b64encode(img).decode("utf-8")
+
         ret_pics.append({
             "date": pic[2],
             "img": img})
@@ -152,5 +157,5 @@ if __name__ == '__main__':
 
     # Register global function to template
     app.jinja_env.globals.update(planttype2img=planttype2img)
-    app.run(port=8000)
+    app.run(port=8000, debug=True)
     db.close()
