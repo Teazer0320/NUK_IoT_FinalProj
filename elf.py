@@ -72,6 +72,33 @@ def query_plant_fromDB(user_id):
     
     return ret_plants
 
+def query_record_fromDB(plant_id, date):
+    cursor = db.cursor()
+    cursor.execute("select * from env_control_record where (plant_id = {}) and (control_time like '{}%');".format(plant_id, date))
+    records = cursor.fetchall()
+
+    ret_records = []
+    for record in records:
+        ret_records.append({
+            "control_time": record[1],
+            "humidity": record[3]
+        })
+    cursor.close()
+
+    return ret_records
+
+def query_envdata_fromDB(plant_id):
+    cursor = db.cursor()
+    cursor.execute("select humidity from current_env where plant_id = %s;", plant_id)
+    envdatas = cursor.fetchall()
+    for envdata in envdatas:
+        ret_envdata = {
+            "humidity": envdata[0]
+        }
+    cursor.close()
+    print(ret_envdata)
+
+    return ret_envdata
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -93,14 +120,15 @@ def homepage():
 
 @app.route("/plant/<plant_id>")
 def plant_page(plant_id):
-    # return 'Plant' + plant_id
-    return render_template("FunctionList.html", plant_id=plant_id)
+    envdata = query_envdata_fromDB(plant_id)
+    return render_template("FunctionList.html", plant_id=plant_id, envdata=envdata)
 
 @app.route("/control_record/<plant_id>")
 def envcontrol_record(plant_id):
     # return 'Plant' + plant_id
     date = request.args.get('querydate', datetime.date.today())
-    return render_template("EnvControlRecord.html", date=date)
+    records = query_record_fromDB(plant_id, date)
+    return render_template("EnvControlRecord.html", date=date, records=records)
 
 @app.route("/plant/watch/<plant_id>")
 def watch_plant(plant_id):

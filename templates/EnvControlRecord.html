@@ -45,13 +45,15 @@
                     <a class="card-text" style="color: #949898;">——— 16hr ———</a>
                 </div>
             </div>
+            {% for record in records %}
             <div class="card cardlist">
                 <div class="card-body">
                     <h2 class="card-text" style="color: #495556; font-weight: bold;">澆水</h2>
-                    <a class="card-text" style="color: #aec4b7;">溫度<span>28</span>°C， 土壤濕度<span>70</span>%</a><br>
-                    <a class="card-text" style="color: #949898;">——— 13 : 30 ———</a>
+                    <a class="card-text" style="color: #949898;">——— 土壤濕度 <span>{{ record.humidity }}</span>% ———</a><br>
+                    <a class="card-text" style="color: #949898;">{{ record.control_time}}</a>
                 </div>
             </div>
+            {% endfor %}
         </div>
     </main>
 </body>
