@@ -13,25 +13,7 @@
     <title>CreatePlant</title>
     <script type="text/javascript">
 	function recognize() {
-		let xml = new XMLHttpRequest();
-		xml.open("GET", "/plant/recognize", false);
-		xml.send(null);
-		let ret = JSON.parse(xml.responseText);
-		
-		const reco_plant = {
-                        "0" : "沙漠玫瑰",
-                        "1" : "薄荷",
-                        "2" : "溫達骨葵",
-                        "3" : "烏羽玉"
-		}
-		
-		let reco_label = document.getElementById("reco_label");
-		reco_label.innerHTML = ret.label;
-		alert(ret.label);
-		let reco_img = document.getElementById("reco_img");
-		reco_img.src = "data:;base64," + ret.img;
-		let reco_img_div = document.getElementById("reco_img_div");
-		reco_img_div.hidden = false;
+		alert("hi");
 	}
 
     </script>
@@ -68,22 +50,18 @@
                         <option value="2">溫達骨葵</option>
                         <option value="3">烏羽玉</option>
                     </select>
-                    <button type="button" class="btn" onclick="recognize();" style="background-color: #aec4b7;">
+                    <button class="btn" onclick="recognize()" style="background-color: #aec4b7;">
                         <img src="{{ url_for('static', filename='img/plant_recognition_icon.png') }}"
                             style="width: 40px;">
                     </button>
                 </div>
-		<div id="reco_img_div" hidden>
-			<img id="reco_img" src="">
-			<h1 id="reco_label"></h1>
-		</div>
                 <div class="input-group cardlist" style="height: 50px; width: auto;">
                     <span class="input-group-text" id="inputGroup-sizing-lg">機器編號</span>
                     <input name="machine_id" type="text" class="form-control" aria-label="Sizing example input"
                         aria-describedby="inputGroup-sizing-lg">
                 </div>
                 <div class="cardlist">
-                    <input class="btn btn-primary btn-set" type="submit" value="確認新增"></button>
+                    <button class="btn btn-primary btn-set" type="submit">確認新增</button>
                 </div>
             </div>
         </form>

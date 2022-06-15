@@ -76,13 +76,14 @@ def run_cap():
 def store_upload_img():
 	
 	try:
-#		DAN.push("Dummy_Sensor", plant_pred)
-		insert_pic_intoDB(cap_img[0])
+		DAN.push("Dummy_Sensor", plant_pred)
+		# insert_pic_intoDB(cap_img[0])
 		print("put", plant_pred)
 	except Exception as e:
 		print(e)
 
 def runSock():
+	global plant_pred
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	sock.bind(("127.0.0.1", 8888))
@@ -90,9 +91,14 @@ def runSock():
 	print("run socket...")
 	while(True):
 		conn, addr = sock.accept()
-		conn.recv(1024)
+		msg = conn.recv(1024).decode("utf-8")
+		print(msg)
+		ret_pred = plant_pred
 		cv2.imwrite("rtimg.jpg", cap_img[0])
-		conn.send(b"OK")
+		if msg == "recognize":
+			conn.send(bytes(ret_pred))
+		else:
+			conn.send(b"[OK]")
 		conn.close()
 
 
@@ -100,7 +106,7 @@ def main():
 	if len(argv) >= 2:
 		DAN.deregister()
 		exit()
-#	DAN.device_registration_with_retry(ServerURL, Reg_addr)
+	DAN.device_registration_with_retry(ServerURL, Reg_addr)
 	cap_thread = threading.Thread(target = run_cap)
 	cap_thread.start()
 
@@ -109,7 +115,7 @@ def main():
 
 	sched = BlockingScheduler(timezone="Asia/Shanghai")
 
-	sched.add_job(store_upload_img, "interval", seconds=60)
+	sched.add_job(store_upload_img, "interval", seconds=10)
 	
 	sched.start()
 

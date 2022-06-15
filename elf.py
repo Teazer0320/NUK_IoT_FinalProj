@@ -3,7 +3,7 @@ import json
 from pprint import pprint
 from linebot.exceptions import InvalidSignatureError
 from linebot import LineBotApi, WebhookHandler
-from flask import request, abort
+from flask import request, abort, jsonify
 from flask import Flask, render_template, url_for, redirect
 app = Flask(__name__)
 import pymysql
@@ -107,7 +107,7 @@ def watch_plant(plant_id):
     # return 'Plant' + plant_id
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(("127.0.0.1", 8888))
-    sock.send(b"get")
+    sock.send(b"rt")
     sock.recv(64)
     img = cv2.imread("rtimg.jpg")
     img = img.tobytes()
@@ -131,6 +131,21 @@ def handle_message(event):
     except:
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='發生錯誤！'))
+
+
+@app.route("/plant/recognize", methods=["GET"])
+def recognize_plant():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(("127.0.0.1", 8888))
+    sock.send(b"recognize")
+    label = sock.recv(64).decode("utf-8")
+    img = cv2.imread("rtimg.jpg")
+    img = img.tobytes()
+    img = np.frombuffer(img, dtype=np.uint8).reshape(imgshape)
+    _, img = cv2.imencode(".jpg", img)
+    img = base64.b64encode(img).decode("utf-8")
+    print("label", label)
+    return jsonify({"label": label, "img": img})
 
 @app.route("/plant/confirmcreate", methods=["POST"])
 def create_plant_toDB():
