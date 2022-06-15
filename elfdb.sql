@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2022-06-13 11:27:37
+-- 產生時間： 2022-06-15 10:26:50
 -- 伺服器版本： 10.4.24-MariaDB
 -- PHP 版本： 8.1.6
 
@@ -24,6 +24,27 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- 資料表結構 `current_env`
+--
+
+CREATE TABLE `current_env` (
+  `plant_id` int(11) NOT NULL,
+  `current_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `humidity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- 傾印資料表的資料 `current_env`
+--
+
+INSERT INTO `current_env` (`plant_id`, `current_time`, `humidity`) VALUES
+(1, '2022-06-15 08:24:07', 60),
+(2, '2022-06-15 07:59:46', 70),
+(2, '2022-06-15 08:17:33', 80);
+
+-- --------------------------------------------------------
+
+--
 -- 資料表結構 `env_control_record`
 --
 
@@ -39,7 +60,7 @@ CREATE TABLE `env_control_record` (
 --
 
 INSERT INTO `env_control_record` (`plant_id`, `control_time`, `operation`, `humidity`) VALUES
-(0, '2022-06-12 11:06:05', 0, 10);
+(2, '2022-06-15 07:32:25', 0, 10);
 
 -- --------------------------------------------------------
 
@@ -106,6 +127,12 @@ INSERT INTO `user` (`user_id`) VALUES
 --
 -- 已傾印資料表的索引
 --
+
+--
+-- 資料表索引 `current_env`
+--
+ALTER TABLE `current_env`
+  ADD PRIMARY KEY (`plant_id`,`current_time`);
 
 --
 -- 資料表索引 `env_control_record`
