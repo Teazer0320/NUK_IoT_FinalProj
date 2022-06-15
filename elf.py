@@ -12,6 +12,7 @@ import cv2
 import numpy as np
 import base64
 import datetime
+import socket
 
 # LINE 聊天機器人的基本資料
 LINE_CHANNEL_ACCESS_TOKEN = "Pa7wrVG1lVy5pWueyME62YrPVl0eE5p7ujp0k3oWqA3+i9NObjUWPXB0tGaXirZsjlth8RCG92xKpDmR6i2mtcA26Yx43XlTPc3tbS5+4ASSvqTDI3lvBIbyB0MvwTTupxC+0VLiAa6mnNU4ClFDjgdB04t89/1O/w1cDnyilFU="
@@ -20,6 +21,8 @@ LINE_CHANNEL_SECRET = "9059a5516e98f71f5462bc4ded873918"
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
+
+imgshape = (480, 640, 3)
 
 def planttype2img(plant_type):
     # [TODO] Complete the mapping
@@ -37,7 +40,6 @@ def query_pic_fromDB(plant_id):
     cursor.execute("select * from plant_picture where plant_id=%s;", plant_id)
     
     pics = cursor.fetchall()
-    imgshape = (480, 640, 3)
 
     ret_pics = []
     for pic in pics:
@@ -103,7 +105,16 @@ def envcontrol_record(plant_id):
 @app.route("/plant/watch/<plant_id>")
 def watch_plant(plant_id):
     # return 'Plant' + plant_id
-    return render_template("WatchPlant.html", plant_id=plant_id)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(("127.0.0.1", 8888))
+    sock.send(b"get")
+    sock.recv(64)
+    img = cv2.imread("rtimg.jpg")
+    img = img.tobytes()
+    img = np.frombuffer(img, dtype=np.uint8).reshape(imgshape)
+    _, img = cv2.imencode(".jpg", img)
+    img = base64.b64encode(img).decode("utf-8")
+    return render_template("WatchPlant.html", plant_id=plant_id, img=img)
 
 @app.route("/plant/diary/<plant_id>")
 def plant_diary(plant_id):
