@@ -144,7 +144,7 @@ def handle_message(event):
     mtext = event.message.text
     try:
         message = TextSendMessage(text=mtext)
-        line_bot_api.reply_message(event.reply_token, message)
+        # line_bot_api.reply_message(event.reply_token, message)
     except:
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='發生錯誤！'))
