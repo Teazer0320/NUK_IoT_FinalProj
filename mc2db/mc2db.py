@@ -1,7 +1,7 @@
 import time, random, requests
-import DAN
+import DAN2
 import pymysql
-
+from sys import argv
 
 def insert_moisture_intoDB(data):
 	db_settings = {
@@ -42,13 +42,14 @@ ServerURL = 'http://2.iottalk.tw:9999'      #with non-secure connection
 #ServerURL = 'https://DomainName' #with SSL connection
 Reg_addr = None #if None, Reg_addr = MAC address
 
-DAN.profile['dm_name']='mc2db'
-DAN.profile['df_list']=['moisture', 'water_control',]
-#DAN.profile['d_name']= 'Assign a Device Name' 
+DAN2.profile['dm_name']='MC2DB'
+DAN2.profile['df_list']=['moisture', 'water_control',]
+#DAN2.profile['d_name']= 'Assign a Device Name' 
 
-DAN.device_registration_with_retry(ServerURL, Reg_addr)
-#DAN.deregister()  #if you want to deregister this device, uncomment this line
-#exit()            #if you want to deregister this device, uncomment this line
+DAN2.device_registration_with_retry(ServerURL, Reg_addr)
+if len(argv) >= 2:
+	DAN2.deregister()  #if you want to deregister this device, uncomment this line
+	exit()            #if you want to deregister this device, uncomment this line
 
 plant_type = 2
 operation = 0
@@ -67,10 +68,10 @@ while True:
         #DAN.push ('Dummy_Sensor', IDF_data) #Push data to an input device feature "Dummy_Sensor"
         #print('put'+str(IDF_data))
         #==================================
-        ODF_data1 = DAN.pull('moisture')#Pull data from an output device feature "Dummy_Control"
-        ODF_data2 = DAN.pull('water_control')
+        ODF_data1 = DAN2.pull('moisture') #Pull data from an output device feature "Dummy_Control"
+        ODF_data2 = DAN2.pull('water_control')
         if ODF_data1 != None:
-            print ('get moistrue:'+str(ODF_data1[0]))   #print (ODF_data[0])
+            print('get moistrue:'+str(ODF_data1[0]))   #print (ODF_data[0])
             print('get water_control'+str(ODF_data2[0]))
             #傳回資料庫(不管有沒有要澆水)即時資料
             # 傳濕度(回傳值*100/1024)

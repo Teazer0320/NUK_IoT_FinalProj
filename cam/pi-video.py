@@ -15,13 +15,13 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 ServerURL = "http://2.iottalk.tw:9999"
 Reg_addr = None
-DAN.profile["dm_name"] = "Dummy_Device"
-DAN.profile["df_list"] = ["Dummy_Sensor", "Dummy_Control", ]
-
-
+DAN.profile["dm_name"] = "Watering"
+DAN.profile["df_list"] = ["plant_type", "moisture", "water_control" ]
 
 cap_img = {}
 plant_pred = None
+moisture_record = [2, 0]
+watering_record = [2, 0, 0]
 
 cap = cv2.VideoCapture(0)
 # shape: 480, 640, 3
@@ -44,6 +44,40 @@ def insert_pic_intoDB(pic):
 	cursor.close()
 	db.close()
 
+
+def insert_moisture_intoDB(data):
+	db_settings = {
+		"host": "127.0.0.1",
+		"user": "elf",
+		"password": "elfgroup4",
+		"database": "elfdb",
+	}
+	db = pymysql.connect(**db_settings)
+	cursor = db.cursor()
+	# modify this
+	cursor.execute("UPDATE current_env SET humidity = %s WHERE plant_id = %s ;", (data[1], data[0]))
+	db.commit()
+	
+	cursor.close()
+	db.close()
+
+
+def insert_watering_intoDB(data):
+	db_settings = {
+		"host": "127.0.0.1",
+		"user": "elf",
+		"password": "elfgroup4",
+		"database": "elfdb",
+	}
+	db = pymysql.connect(**db_settings)
+	cursor = db.cursor()
+	
+	# modify this
+	cursor.execute("insert into env_control_record (plant_id, operation, humidity) values(%s, %s, %s);", (data[0], data[1],data[2]))
+	db.commit()
+	
+	cursor.close()
+	db.close()
 
 def run_cap():
 	global cap_img, plant_pred
@@ -76,11 +110,36 @@ def run_cap():
 def store_upload_img():
 	
 	try:
-		# DAN.push("Dummy_Sensor", plant_pred)
-		# insert_pic_intoDB(cap_img[0])
+		DAN.push("plant_type", plant_pred)
+		insert_pic_intoDB(cap_img[0])
 		print("put", plant_pred)
 	except Exception as e:
 		print(e)
+
+def download_mc2db():
+	try:
+		ODF_data1 = DAN.pull('moisture') #Pull data from an output device feature "Dummy_Control"
+		ODF_data2 = DAN.pull('water_control')
+		if ODF_data1 != None and ODF_data2 != None:
+		    print('get moistrue:'+str(ODF_data1[0]))   #print (ODF_data[0])
+		    print('get water_control'+str(ODF_data2[0]))
+		    #傳回資料庫(不管有沒有要澆水)即時資料
+		    # 傳濕度(回傳值*100/1024)
+		    humidity = (int)((ODF_data1[0] * 100)/1024)
+		    moisture_record[1] = humidity
+		    print("insert_moisture...")
+		    insert_moisture_intoDB(moisture_record)
+	
+		    print('get plant type...\n')
+		    print("start watering...\n")
+		    if ODF_data2[0] == 1:
+		    #傳回資料庫(有要澆水)照護資料
+			    watering_record[1]=0
+			    watering_record[2]=humidity
+			    insert_watering_intoDB(watering_record)
+	except Exception as e:
+		print(e)
+
 
 def runSock():
 	global plant_pred
@@ -94,7 +153,7 @@ def runSock():
 		msg = conn.recv(1024).decode("utf-8")
 		print(msg)
 		ret_pred = str(plant_pred).encode("utf-8")
-		cv2.imwrite("rtimg.jpg", cap_img[0])
+		cv2.imwrite("../rtimg.jpg", cap_img[0])
 		print("ret_pred:", ret_pred)
 		if msg == "recognize":
 			conn.send(bytes(ret_pred))
@@ -107,7 +166,7 @@ def main():
 	if len(argv) >= 2:
 		DAN.deregister()
 		exit()
-#	DAN.device_registration_with_retry(ServerURL, Reg_addr)
+	DAN.device_registration_with_retry(ServerURL, Reg_addr)
 	cap_thread = threading.Thread(target = run_cap)
 	cap_thread.start()
 
@@ -118,6 +177,7 @@ def main():
 
 	sched.add_job(store_upload_img, "interval", seconds=10)
 	
+	sched.add_job(download_mc2db, "interval", seconds=10)
 	sched.start()
 
 
@@ -125,7 +185,6 @@ def main():
 	sock_thread.join()
 	cv2.destroyAllWindows()
 		
-
 
 if __name__ == "__main__":
 	main()

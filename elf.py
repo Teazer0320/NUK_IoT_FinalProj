@@ -24,6 +24,14 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 imgshape = (480, 640, 3)
 
+db_settings = {
+    "host": "127.0.0.1",
+    "user": "elf",
+    "password": "elfgroup4",
+    "database": "elfdb",
+}
+
+
 def planttype2img(plant_type):
     # [TODO] Complete the mapping
     mapping = {
@@ -36,6 +44,7 @@ def planttype2img(plant_type):
 
 def query_pic_fromDB(plant_id):
     
+    db = pymysql.connect(**db_settings)
     cursor = db.cursor()
     cursor.execute("select * from plant_picture where plant_id=%s;", plant_id)
     
@@ -53,10 +62,12 @@ def query_pic_fromDB(plant_id):
             "img": img})
 
     cursor.close()
-    
+    db.close()
     return ret_pics
 
 def query_plant_fromDB(user_id):
+    
+    db = pymysql.connect(**db_settings)
     cursor = db.cursor()
     cursor.execute("select plant_id,plant_name,plant_type from plant where user_id=%s;", user_id)
     plants = cursor.fetchall()
@@ -69,10 +80,12 @@ def query_plant_fromDB(user_id):
             'plant_type': plant[2],
         })
     cursor.close()
-    
+    db.close()   
     return ret_plants
 
 def query_record_fromDB(plant_id, date):
+    
+    db = pymysql.connect(**db_settings)
     cursor = db.cursor()
     cursor.execute("select * from env_control_record where (plant_id = {}) and (control_time like '{}%');".format(plant_id, date))
     records = cursor.fetchall()
@@ -84,10 +97,12 @@ def query_record_fromDB(plant_id, date):
             "humidity": record[3]
         })
     cursor.close()
-
+    db.close()
     return ret_records
 
 def query_envdata_fromDB(plant_id):
+    
+    db = pymysql.connect(**db_settings)
     cursor = db.cursor()
     cursor.execute("select humidity from current_env where plant_id = %s;", plant_id)
     envdatas = cursor.fetchall()
@@ -96,6 +111,7 @@ def query_envdata_fromDB(plant_id):
             "humidity": envdata[0]
         }
     cursor.close()
+    db.close()
     print(ret_envdata)
 
     return ret_envdata
@@ -208,16 +224,7 @@ def create_plant():
     return render_template("CreatePlant.html")
 
 if __name__ == '__main__':
-    db_settings = {
-        "host": "127.0.0.1",
-        "user": "elf",
-        "password": "elfgroup4",
-        "database": "elfdb",
-    }
-    global db 
-    db = pymysql.connect(**db_settings)
 
     # Register global function to template
     app.jinja_env.globals.update(planttype2img=planttype2img)
     app.run(port=8000, debug=True)
-    db.close()
