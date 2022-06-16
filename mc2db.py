@@ -3,7 +3,24 @@ import DAN
 import pymysql
 
 
-def insert_mc_intoDB(data):
+def insert_moisture_intoDB(data):
+	db_settings = {
+		"host": "127.0.0.1",
+		"user": "elf",
+		"password": "elfgroup4",
+		"database": "elfdb",
+	}
+	db = pymysql.connect(**db_settings)
+	cursor = db.cursor()
+	# modify this
+	cursor.execute("UPDATE current_env SET humidity = %s WHERE plant_id = %s ;", (data[1]), data[0])
+	db.commit()
+	
+	cursor.close()
+	db.close()
+
+
+def insert_watering_intoDB(data):
 	db_settings = {
 		"host": "127.0.0.1",
 		"user": "elf",
@@ -14,7 +31,7 @@ def insert_mc_intoDB(data):
 	cursor = db.cursor()
 	
 	# modify this
-	cursor.execute("insert into plant_picture (machine_id, plant_pic) values(%s, %s);", ("FF:EE:AA:FF:CC:BB", pic_bin))
+	cursor.execute("insert into env_control_record (plant_id, operation, humidity) values(%s, %s, %s);", (data[0], data[1],data[2]))
 	db.commit()
 	
 	cursor.close()
@@ -25,24 +42,51 @@ ServerURL = 'http://2.iottalk.tw:9999'      #with non-secure connection
 #ServerURL = 'https://DomainName' #with SSL connection
 Reg_addr = None #if None, Reg_addr = MAC address
 
-DAN.profile['dm_name']='Dummy_Device'
-DAN.profile['df_list']=['Dummy_Sensor', 'Dummy_Control',]
+DAN.profile['dm_name']='mc2db'
+DAN.profile['df_list']=['moisture', 'water_control',]
 #DAN.profile['d_name']= 'Assign a Device Name' 
 
 DAN.device_registration_with_retry(ServerURL, Reg_addr)
 #DAN.deregister()  #if you want to deregister this device, uncomment this line
 #exit()            #if you want to deregister this device, uncomment this line
 
+plant_type = 2
+operation = 0
+humidity = 0
+moisture_record = list()
+watering_record = list()
+moisture_record.append(plant_type)
+moisture_record.append(humidity)
+watering_record.append(plant_type)
+watering_record.append(operation)
+watering_record.append(humidity)
+
 while True:
     try:
-        IDF_data = random.uniform(1, 10)
-        DAN.push ('Dummy_Sensor', IDF_data) #Push data to an input device feature "Dummy_Sensor"
-        print('put'+str(IDF_data))
+        #IDF_data = random.uniform(1, 10)
+        #DAN.push ('Dummy_Sensor', IDF_data) #Push data to an input device feature "Dummy_Sensor"
+        #print('put'+str(IDF_data))
         #==================================
+        ODF_data1 = DAN.pull('moisture')#Pull data from an output device feature "Dummy_Control"
+        ODF_data2 = DAN.pull('water_control')
+        if ODF_data1 != None:
+            print ('get moistrue:'+str(ODF_data1[0]))   #print (ODF_data[0])
+            print('get water_control'+str(ODF_data2[0]))
+            #傳回資料庫(不管有沒有要澆水)即時資料
+            # 傳濕度(回傳值*100/1024)
+            humidity = (int)((ODF_data1[0] * 100)/1024)
+            moisture_record[1] = humidity
+            insert_moisture_intoDB(moisture_record)
 
-        ODF_data = DAN.pull('Dummy_Control')#Pull data from an output device feature "Dummy_Control"
-        if ODF_data != None:
-            print ('get'+str(ODF_data[0]))   #print (ODF_data[0])
+            if(ODF_data2 != None):
+                print('get plant type...\n')
+                if(ODF_data2[0]==1):
+                    print("start watering...\n")
+                    #傳回資料庫(有要澆水)照護資料
+                    watering_record[1]=operation
+                    watering_record[2]=humidity
+                    insert_watering_intoDB(watering_record)
+
 
     except Exception as e:
         print(e)
