@@ -120,7 +120,12 @@ def homepage():
 
 @app.route("/plant/<plant_id>")
 def plant_page(plant_id):
-    envdata = query_envdata_fromDB(plant_id)
+    try:
+        envdata = query_envdata_fromDB(plant_id) 
+    except:
+        envdata = {
+            "humidity": "--"
+        }
     return render_template("FunctionList.html", plant_id=plant_id, envdata=envdata)
 
 @app.route("/control_record/<plant_id>")
@@ -180,12 +185,13 @@ def create_plant_toDB():
     cursor = db.cursor()
     p_type =  int(request.values["plant_type"])
     plant_type = ["沙漠玫瑰", "薄荷", "溫達骨葵", "烏羽玉"][p_type]
-
+    m_id =  int(request.values["plant_type"])
+    machine_id = ["FF:EE:AA:FF:CC:BB"][m_id]
     new_plant = {
         "user_id": 0,
         "plant_name": request.values["plant_name"],
         "plant_type": plant_type,
-        "machine_id": request.values["machine_id"]   
+        "machine_id": machine_id  
     }
 
     insert_sql = "insert into `plant`(`user_id`,`plant_name`,`plant_type`,`machine_id`) values (%s,%s,%s,%s);"
@@ -195,7 +201,7 @@ def create_plant_toDB():
     cursor.execute("select LAST_INSERT_ID();")
     result = cursor.fetchone()
     plant_id=result[0]
-    return redirect(url_for('plant_page',plant_id=plant_id))
+    return redirect(url_for('plant_page', plant_id=plant_id))
 
 @app.route("/plant/create", methods=["GET", "POST"])
 def create_plant():

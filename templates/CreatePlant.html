@@ -76,9 +76,11 @@
 			<img id="reco_img" src="" height="225" width="288">
 		</div>
                 <div class="input-group cardlist" style="height: 50px; width: auto;">
-                    <span class="input-group-text" id="inputGroup-sizing-lg">機器編號</span>
-                    <input name="machine_id" type="text" class="form-control" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-lg">
+                    <label class="input-group-text" for="inputGroupSelect01">機器編號</label>
+                    <select id="select_plant" name="machine_id" class="form-select" id="inputGroupSelect01">
+                        <option selected>選擇</option>
+                        <option value="0">FF:EE:AA:FF:CC:CC</option>
+                    </select>
                 </div>
                 <div class="cardlist">
                     <input class="btn btn-primary btn-set" type="submit" value="確認新增"></button>
