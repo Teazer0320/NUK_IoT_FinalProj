@@ -24,12 +24,8 @@
                 <!-- <h2>排版</h2> -->
             </div>
             <div style="text-align:center">
-                <div class="cardlist">
-                    <!-- 樹莓派拍到的照片 -->
-                    <img src="{{ url_for('static', filename='img/plant_elf_icon.png') }}" class="logo">
-                </div>
 		<div class="cardlist">
-		    <img src="data:;base64,{{ img }}">
+		    <img src="data:;base64,{{ img }}" height="225" width="288">
 		</div>
                 <div class="cardlist">
                     <a class="btn btn-primary btn-set" href="/plant/{{plant_id}}" role="button">返回</a>
