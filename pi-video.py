@@ -76,7 +76,7 @@ def run_cap():
 def store_upload_img():
 	
 	try:
-		DAN.push("Dummy_Sensor", plant_pred)
+		# DAN.push("Dummy_Sensor", plant_pred)
 		# insert_pic_intoDB(cap_img[0])
 		print("put", plant_pred)
 	except Exception as e:
@@ -93,8 +93,9 @@ def runSock():
 		conn, addr = sock.accept()
 		msg = conn.recv(1024).decode("utf-8")
 		print(msg)
-		ret_pred = plant_pred
+		ret_pred = str(plant_pred).encode("utf-8")
 		cv2.imwrite("rtimg.jpg", cap_img[0])
+		print("ret_pred:", ret_pred)
 		if msg == "recognize":
 			conn.send(bytes(ret_pred))
 		else:
@@ -106,7 +107,7 @@ def main():
 	if len(argv) >= 2:
 		DAN.deregister()
 		exit()
-	DAN.device_registration_with_retry(ServerURL, Reg_addr)
+#	DAN.device_registration_with_retry(ServerURL, Reg_addr)
 	cap_thread = threading.Thread(target = run_cap)
 	cap_thread.start()
 

@@ -25,9 +25,8 @@
                         "3" : "烏羽玉"
 		}
 		
-		let reco_label = document.getElementById("reco_label");
-		reco_label.innerHTML = ret.label;
-		alert(ret.label);
+		let select_plant = document.getElementById("select_plant");
+		select_plant.selectedIndex = parseInt(ret.label) + 1;
 		let reco_img = document.getElementById("reco_img");
 		reco_img.src = "data:;base64," + ret.img;
 		let reco_img_div = document.getElementById("reco_img_div");
@@ -61,7 +60,7 @@
                 </div>
                 <div class="input-group cardlist" style="height: 50px; width: auto;">
                     <label class="input-group-text" for="inputGroupSelect01">植物種類</label>
-                    <select name="plant_type" class="form-select" id="inputGroupSelect01">
+                    <select id="select_plant" name="plant_type" class="form-select" id="inputGroupSelect01">
                         <option selected>選擇</option>
                         <option value="0">沙漠玫瑰</option>
                         <option value="1">薄荷</option>
@@ -75,7 +74,6 @@
                 </div>
 		<div id="reco_img_div" hidden>
 			<img id="reco_img" src="">
-			<h1 id="reco_label"></h1>
 		</div>
                 <div class="input-group cardlist" style="height: 50px; width: auto;">
                     <span class="input-group-text" id="inputGroup-sizing-lg">機器編號</span>
