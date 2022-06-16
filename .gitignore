@@ -1,1 +1,4 @@
 *.whl
+__pycache__/
+cam/__pycache__/
+mc2db/__pycache__/
