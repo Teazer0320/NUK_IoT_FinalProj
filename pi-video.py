@@ -23,6 +23,7 @@ DAN.profile["df_list"] = ["Dummy_Sensor", "Dummy_Control", ]
 cap_img = {}
 plant_pred = None
 
+cap = cv2.VideoCapture(0)
 # shape: 480, 640, 3
 # dtype: uint8
 
@@ -37,7 +38,7 @@ def insert_pic_intoDB(pic):
 	cursor = db.cursor()
 	pic_bin = pic.tobytes()
 	
-	cursor.execute("insert into plant_picture (machine_id, plant_pic) values(%s, %s);", ("FF:EE:AA:FF:CC:BB", pic_bin))
+	cursor.execute("insert into plant_picture (machine_id, plant_pic, plant_id) values(%s, %s, 2);", ("FF:EE:AA:FF:CC:BB", pic_bin))
 	db.commit()
 	
 	cursor.close()
@@ -47,7 +48,6 @@ def insert_pic_intoDB(pic):
 def run_cap():
 	global cap_img, plant_pred
 	model = models.load_model("cnn_model.h5")
-	cap = cv2.VideoCapture(0)
 	while True:
 		ret, frame = cap.read()
 		if ret:
@@ -76,19 +76,43 @@ def run_cap():
 def store_upload_img():
 	
 	try:
-		DAN.push("Dummy_Sensor", plant_pred)
-		insert_pic_intoDB(cap_img[0])
+		# DAN.push("Dummy_Sensor", plant_pred)
+		# insert_pic_intoDB(cap_img[0])
 		print("put", plant_pred)
 	except Exception as e:
 		print(e)
+
+def runSock():
+	global plant_pred
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	sock.bind(("127.0.0.1", 8888))
+	sock.listen(8)
+	print("run socket...")
+	while(True):
+		conn, addr = sock.accept()
+		msg = conn.recv(1024).decode("utf-8")
+		print(msg)
+		ret_pred = str(plant_pred).encode("utf-8")
+		cv2.imwrite("rtimg.jpg", cap_img[0])
+		print("ret_pred:", ret_pred)
+		if msg == "recognize":
+			conn.send(bytes(ret_pred))
+		else:
+			conn.send(b"[OK]")
+		conn.close()
+
 
 def main():
 	if len(argv) >= 2:
 		DAN.deregister()
 		exit()
-	DAN.device_registration_with_retry(ServerURL, Reg_addr)
+#	DAN.device_registration_with_retry(ServerURL, Reg_addr)
 	cap_thread = threading.Thread(target = run_cap)
 	cap_thread.start()
+
+	sock_thread = threading.Thread(target = runSock)
+	sock_thread.start()
 
 	sched = BlockingScheduler(timezone="Asia/Shanghai")
 
@@ -96,8 +120,9 @@ def main():
 	
 	sched.start()
 
-	cap_thread.join()
 
+	cap_thread.join()
+	sock_thread.join()
 	cv2.destroyAllWindows()
 		
 
