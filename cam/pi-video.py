@@ -107,14 +107,21 @@ def run_cap():
 
 	cap.release()
 
-def store_upload_img():
+def upload_img_type():
 	
 	try:
 		DAN.push("plant_type", plant_pred)
-		insert_pic_intoDB(cap_img[0])
 		print("put", plant_pred)
 	except Exception as e:
 		print(e)
+
+
+def store_img():
+	try:
+		insert_pic_intoDB(cap_img[0])
+	except Exception as e:
+		print(e)
+
 
 def download_mc2db():
 	try:
@@ -175,11 +182,10 @@ def main():
 
 	sched = BlockingScheduler(timezone="Asia/Shanghai")
 
-	sched.add_job(store_upload_img, "interval", seconds=10)
-	
+	sched.add_job(upload_img_type, "interval", seconds=10)
+	sched.add_job(store_img, "interval", minutes=3)
 	sched.add_job(download_mc2db, "interval", seconds=10)
 	sched.start()
-
 
 	cap_thread.join()
 	sock_thread.join()
