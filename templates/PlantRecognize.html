@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <link href="{{ url_for('static', filename='css/plantelf.css') }}" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PlantRecognize</title>
+    <script type="text/javascript">
+	function recognize() {
+		let xml = new XMLHttpRequest();
+		xml.open("GET", "/plant/recognize", false);
+		xml.send(null);
+		let ret = JSON.parse(xml.responseText);
+		
+		const reco_plant = {
+                        "0" : "沙漠玫瑰",
+                        "1" : "薄荷",
+                        "2" : "溫達骨葵",
+                        "3" : "烏羽玉"
+		}
+		
+		let plant_type = document.getElementById("plant_type");
+		plant_type.innerHTML = reco_plant[ret.label];
+		let reco_img = document.getElementById("reco_img");
+		reco_img.src = "data:;base64," + ret.img;
+		let reco_img_div = document.getElementById("reco_img_div");
+		reco_img_div.hidden = false;
+	}
+
+    </script>
+</head>
+
+<body>
+    <header>
+        <div class="navbar navbar-dark shadow-sm" style="background-color: #aec4b7;">
+            <div class="container justify-content-between" style="padding: 0px;">
+                <a href="/" class="navbar-brand align-items-center d-flex">
+                    <img src="{{ url_for('static', filename='img/plant_elf_icon.png') }}" class="logo">
+                    <h2 style="font-weight:bold ;">盆栽小精靈</h2>
+                </a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <div style=" padding: 20px 0px;">
+            </divstyle>
+        </div>
+        <div style="text-align:center">
+            <div id="reco_img_div" style="margin-bottom: 2em;">
+                <img id="reco_img" src="" height="225" width="288">
+            </div>
+            <div class="cardlist" style="height: 50px; width: auto;">
+                <a id="plant_type" style="font-weight:bold ;">植物種類</a>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

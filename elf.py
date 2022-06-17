@@ -171,6 +171,10 @@ def plant_diary(plant_id):
     pics_data = query_pic_fromDB(plant_id)
     return render_template("PlantDiary.html", pics_data=pics_data, plant_id=plant_id)
 
+@app.route("/plant/recognize")
+def plant_diary():
+    return render_template("PlantRecognize.html")
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     mtext = event.message.text
